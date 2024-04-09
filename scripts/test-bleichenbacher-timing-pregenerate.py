@@ -7,6 +7,7 @@ import traceback
 import sys
 import getopt
 import os
+import time
 from itertools import chain, repeat
 from random import sample
 
@@ -32,6 +33,7 @@ from tlsfuzzer.helpers import SIG_ALL, RSA_PKCS1_ALL
 from tlsfuzzer.utils.statics import WARM_UP
 from tlsfuzzer.utils.log import Log
 
+from constants import CHARACTERS_LENGTH
 
 version = 6
 
@@ -156,6 +158,14 @@ def main():
     delay = None
     carriage_return = None
     no_alert = False
+
+    print("=" * CHARACTERS_LENGTH)
+    print("""Tests for handling of malformed encrypted values in CKE
+This test script checks if the server correctly handles malformed
+Client Key Exchange messages in RSA key exchange.
+""".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv,
@@ -872,7 +882,8 @@ def main():
     print("Running tests for {0}".format(CipherSuite.ietfNames[cipher]))
 
     for c_name, c_test in ordered_tests:
-        print("{0} ...".format(c_name))
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(c_test)
 
@@ -909,110 +920,12 @@ def main():
                 bad += 1
                 failed.append(c_name)
 
+        print("=" * CHARACTERS_LENGTH, "\n")
+
     print("Test end")
     print(20 * '=')
-    print("""Tests for handling of malformed encrypted values in CKE
-
-This test script checks if the server correctly handles malformed
-Client Key Exchange messages in RSA key exchange.
-When executed with `-i` it will also verify that different errors
-are rejected in the same amount of time; it checks for timing
-sidechannel.
-The script executes tests without "sanity" in name multiple
-times to estimate server response time.
-
-Quick reminder: when encrypting a value using PKCS#1 v1.5 standard
-the plaintext has the following structure, starting from most
-significant byte:
-- one byte, the version of the encryption, must be 0
-- one byte, the type of encryption, must be 2 (is 1 in case of
-  signature)
-- one or more bytes of random padding, with no zero bytes. The
-  count must equal the byte size of the public key modulus less
-  size of encrypted value and 3 (for version, type and separator)
-  For signatures the bytes must equal 0xff
-- one zero byte that acts as separator between padding and
-  encrypted value
-- zero, one, or more bytes that are the encrypted value, for TLS it must
-  be 48 bytes long and the first two bytes need to equal the
-  TLS version advertised in Client Hello
-
-All tests should exhibit the same kind of timing behaviour, but
-if some groups of tests are inconsistent, that points to likely
-place where the timing leak happens:
-- the control test case:
-  - 'control - fuzzed pre master secret 1',
-    'control - fuzzed pre master secret 2', and
-    'control - fuzzed pre master secret 3' - this will end up with random
-    plaintexts in record with Finished, most resembling a randomly
-    selected PMS by the server
-  - 'random plaintext' - this will end up with a completely random
-    plaintext after RSA decryption, most resembling a ciphertext
-    for which the Bleichenbacher oracle needs a negative result
-- padding type verification:
-  - 'set PKCS#1 padding type to 3'
-  - 'set PKCS#1 padding type to 1'
-  - 'use PKCS#1 padding type 1'
-- incorrect size of encrypted value (pre-master secret),
-  inconsistent results here suggests that the decryption leaks
-  length of plaintext:
-  - 'zero byte in random padding' - this creates a PMS that's 4
-    bytes shorter than the public key size and has a random TLS
-    version
-  - 'zero byte in last byte of random padding' - this creates a
-    PMS that's one byte too long (49 bytes long), with a TLS
-    version that's (0, major_version)
-  - 'no null separator in padding' - as the PMS is all zero, this
-    effectively sends a PMS that's 45 bytes long with TLS version
-    of (0, 0)
-  - 'two byte long PMS (TLS version only)'
-  - 'one byte encrypted value' - the encrypted value is 3, as a
-    correct value for first byte of TLS version
-  - 'too short (47-byte) pre master secret'
-  - 'very short (4-byte) pre master secret'
-  - 'too long (49-byte) pre master secret'
-  - 'very long (124-byte) pre master secret'
-  - 'very long (96-byte) pre master secret'
-- invalid PKCS#1 v1.5 encryption padding:
-  - 'zero byte in first byte of random padding' - this is a mix
-    of too long PMS and invalid padding, it actually doesn't send
-    padding at all, the padding length is zero
-  - 'invalid version number in padding' - this sets the first byte
-    of plaintext to 1
-  - 'no null separator in encrypted value' - this doesn't send a
-    null byte separating padding and encrypted value
-  - 'no encrypted value' - this sends a null separator, but it's
-    the last byte of plaintext
-  - 'too short PKCS padding - 1 bytes', 'too short PKCS padding - 4 bytes',
-    'too short PKCS padding - 8 bytes' - this sends the correct encryption
-    type in the padding (2), but one, 4 or 8 bytes later than required
-  - 'very short PKCS padding (40 bytes short)' - same as above
-    only 40 bytes later
-  - 'too long PKCS padding' this doesn't send the PKCS#1 v1.5
-    version at all, but starts with padding type
-- invalid TLS version in PMS, differences here suggest a leak in
-  code checking for correctness of this value:
-  - 'wrong TLS version (2, 2) in pre master secret'
-  - 'wrong TLS version (0, 0) in pre master secret'
-- plaintext with specific Hamming weights, start with 0x00 and 0x02 bytes
-  but then switch to special plaintext, differences here suggest a leak
-  happening in the maths library:
-  - 'very low Hamming weight RSA plaintext' - padding, TLS version are all zero
-    bytes, PMS is random
-  - 'very high Hamming weight RSA plaintext' - padding, padding separator, TLS
-    version are all 0xff bytes, PMS is random bytes
-  - 'use PKCS#1 padding type 1' - here the padding will be all 0xff bytes, the
-    PMS will be random
-  - 'low Hamming weight RSA plaintext - 0xXX - high' - padding, padding
-    separator, TLS version and PMS are all set to the specified value, with
-    the exception of the first 8 bytes of padding, which are random non-zero
-    values
-  - 'low Hamming weight RSA plaintext - 0xXX - low' - padding, padding
-    separator, TLS version and PMS are all set to the specified value, with
-    the exception of the last 8 bytes of PMS, which are random values""")
-    print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests) + 2 * len(sanity_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))
