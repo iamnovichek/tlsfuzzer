@@ -11,6 +11,7 @@ from random import sample
 import sys
 import getopt
 import re
+import time 
 from itertools import chain
 
 from tlsfuzzer.runner import Runner
@@ -34,6 +35,7 @@ from tlslite.x509certchain import X509CertChain
 from tlsfuzzer.helpers import RSA_SIG_ALL
 from tlsfuzzer.utils.lists import natural_sort_keys
 
+from constants import CHARACTERS_LENGTH
 
 version = 3
 
