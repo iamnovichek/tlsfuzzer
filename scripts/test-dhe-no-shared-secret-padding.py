@@ -7,6 +7,7 @@ from __future__ import print_function
 import traceback
 import sys
 import getopt
+import time
 from itertools import chain
 from random import sample
 
@@ -28,6 +29,7 @@ from tlslite.extensions import SupportedGroupsExtension, \
 from tlslite.utils.cryptomath import numBytes
 from tlsfuzzer.helpers import SIG_ALL, AutoEmptyExtension
 
+from constants import CHARACTERS_LENGTH
 
 version = 8
 
@@ -71,6 +73,13 @@ def main():
     record_split = True
     extra_exts = False
     ems = False
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Check if the calculated DHE pre_master_secret is truncated when".upper())
+    print("there are zeros on most significant bytes, and that server".upper())
+    print("accepts a client key share when it does the same".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:x:X:n:zM", ["help", "min-zeros=",
@@ -248,7 +257,8 @@ def main():
             collected_premaster_secrets[:] = []
             collected_client_key_shares[:] = []
 
-            print("\"{1}\" repeat {0}...".format(i, c_name))
+            print("{} -->\n".format(c_name).upper())
+            time.sleep(1)
             i += 1
             if c_name == "sanity":
                 break_loop = True
@@ -281,6 +291,9 @@ def main():
                     else:
                         xfail += 1
                         print("OK-expected failure\n")
+                
+                print("=" * CHARACTERS_LENGTH, "\n")
+
                 break
             else:
                 if res:
@@ -303,24 +316,21 @@ def main():
                                   numBytes(collected_client_key_shares[-1])))
                         break_loop_clnt = True
                     print("OK\n")
+                    print("=" * CHARACTERS_LENGTH, "\n")
                 else:
                     bad += 1
                     failed.append(c_name)
+                    print("=" * CHARACTERS_LENGTH, "\n")
                     break
+
             if break_loop and break_loop_clnt:
                 break
-
-
-    print('')
-
-    print("Check if the calculated DHE pre_master_secret is truncated when")
-    print("there are zeros on most significant bytes, and that server")
-    print("accepts a client key share when it does the same")
+                
 
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests) + 2*len(sanity_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))

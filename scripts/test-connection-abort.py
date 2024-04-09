@@ -5,6 +5,7 @@ from __future__ import print_function
 import traceback
 import sys
 import getopt
+import time
 from itertools import chain
 from random import sample
 
@@ -25,6 +26,7 @@ from tlslite.extensions import SupportedGroupsExtension, \
 from tlsfuzzer.utils.lists import natural_sort_keys
 from tlsfuzzer.helpers import SIG_ALL, AutoEmptyExtension
 
+from constants import CHARACTERS_LENGTH
 
 version = 2
 
@@ -91,6 +93,14 @@ def main():
     repeat = 10
     timeout = 5
     ems = False
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Test server behaviour when the client aborts connection at".upper())
+    print("different times.".upper())
+    print("For TLS 1.2 or earlier and RSA key exchange (or (EC)DHE if".upper())
+    print("-d option is used)".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:x:X:n:dC:t:M",
@@ -397,7 +407,8 @@ def main():
         ordered_tests = chain(sanity_tests, sampled_tests, sanity_tests)
 
         for c_name, c_test in ordered_tests:
-            print("\"{0}\" repeat {1}".format(c_name, i))
+            print("{} -->\n".format(c_name).upper())
+            time.sleep(1)
 
             runner = Runner(c_test)
 
@@ -433,16 +444,13 @@ def main():
                 else:
                     bad += 1
                     failed.append(c_name)
-
-    print("Test server behaviour when the client aborts connection at")
-    print("different times.")
-    print("For TLS 1.2 or earlier and RSA key exchange (or (EC)DHE if")
-    print("-d option is used)\n")
+            
+            print("=" * CHARACTERS_LENGTH, "\n")
 
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(
         repeat * (len(sampled_tests) + 2*len(sanity_tests))))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))

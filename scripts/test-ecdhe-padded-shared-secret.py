@@ -26,6 +26,8 @@ from tlslite.constants import CipherSuite, AlertLevel, AlertDescription, \
 from tlslite.extensions import ECPointFormatsExtension, \
         SupportedGroupsExtension
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 5
 
@@ -64,6 +66,12 @@ def main():
     last_exp_tmp = None
     min_zeros = 1
     record_split = True
+    
+    print("=" * CHARACTERS_LENGTH)
+    print("Check if the connections work when the calculated ECDH shared".upper())
+    print("secret must be padded on the left with zeros".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:x:X:n:z", ["help", "min-zeros="])
@@ -230,7 +238,8 @@ def main():
         while True:
             # don't hog the memory unnecessairly
             collected_premaster_secrets[:] = []
-            print("\"{1}\" repeat {0}...".format(i, c_name))
+            print("{} -->\n".format(c_name).upper())
+            time.sleep(1)
             i += 1
             if c_name == 'sanity':
                 break_loop = True
@@ -263,6 +272,7 @@ def main():
                         xfail += 1
                         print("OK-expected failure\n")
                 break_loop = True
+                print("=" * CHARACTERS_LENGTH, "\n")
             else:
                 if res:
                     good += 1
@@ -277,18 +287,15 @@ def main():
                     bad += 1
                     failed.append(c_name)
                     break_loop = True
+                print("=" * CHARACTERS_LENGTH, "\n")
             if break_loop:
                 break
 
-    print('')
-
-    print("Check if the connections work when the calculated ECDH shared")
-    print("secret must be padded on the left with zeros")
 
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests) + 2*len(sanity_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))

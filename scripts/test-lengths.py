@@ -26,6 +26,8 @@ from tlslite.extensions import SupportedGroupsExtension, \
 from tlsfuzzer.utils.lists import natural_sort_keys
 from tlsfuzzer.helpers import SIG_ALL, AutoEmptyExtension
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 3
 
@@ -101,6 +103,11 @@ def main():
     size_limit = None
     timeout = 5.0
     ems = False
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Check if different lengths of plaintext are handled correctly.".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:x:X:n:dC:t:M",
@@ -326,7 +333,8 @@ def main():
         ordered_tests = chain(sanity_tests, sampled_tests, sanity_tests)
 
     for c_name, c_test in ordered_tests:
-        print("{0} ...".format(c_name))
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(c_test)
 
@@ -362,22 +370,14 @@ def main():
             else:
                 bad += 1
                 failed.append(c_name)
-
-    print("Check if different lengths of plaintext are handled correctly.")
-    print("Test expects the server to reply with plaintext of the same length")
-    print("it sent, that's usually called an 'echo' mode in test servers.")
-    print("For full test coverage you should execute it with all valid")
-    print("combinations of cipher (AES-128, AES-256, 3DES, etc.), all valid")
-    print("cipher modes (CBC, GCM, CCM, etc.), all valid HMACs (SHA1, SHA256,")
-    print("SHA384, etc.), EtM vs MtE for CBC ciphersuites and")
-    print("max_fragment_length extension.")
-    print()
+        
+        print("=" * CHARACTERS_LENGTH, "\n")
 
     print("Test end")
     print("Cipher used: {0}".format(CipherSuite.ietfNames[cipher]))
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests) + 2*len(sanity_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))

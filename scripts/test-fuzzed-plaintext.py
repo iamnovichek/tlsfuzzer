@@ -29,6 +29,8 @@ from tlslite.constants import CipherSuite, AlertLevel, AlertDescription, \
 from tlslite.extensions import SupportedGroupsExtension, \
         SignatureAlgorithmsExtension, SignatureAlgorithmsCertExtension
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 10
 
@@ -210,6 +212,11 @@ def main():
     cipher = None
     splitting = None
     ems = False
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Testing for de-padding and MAC verification".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:x:X:n:dC:M", ["help", "random=",
@@ -445,7 +452,8 @@ def main():
     ordered_tests = chain(sanity_tests, sampled_tests, sanity_tests)
 
     for c_name, c_test in ordered_tests:
-        print("{0} ...".format(c_name))
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(c_test)
 
@@ -481,21 +489,13 @@ def main():
             else:
                 bad += 1
                 failed.append(c_name)
-
-    print("Tester for de-padding and MAC verification\n")
-    print("Generates plaintexts that can be incorrectly handled by de-padding")
-    print("and MAC verification algorithms and verifies that they are handled")
-    print("correctly and consistently.\n")
-    print("Should be executed with multiple ciphers (especially regarding the")
-    print("HMAC used) and TLS versions. Note: test requires CBC mode")
-    print("ciphers.\n")
-    print("TLS 1.0 servers should require enabling BEAST workaround, see")
-    print("help message.\n")
+        
+        print("=" * CHARACTERS_LENGTH, "\n")
 
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests) + 2*len(sanity_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))

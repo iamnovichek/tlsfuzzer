@@ -28,6 +28,8 @@ from tlslite.extensions import SupportedGroupsExtension, \
 from tlsfuzzer.utils.lists import natural_sort_keys
 from tlsfuzzer.helpers import SIG_ALL
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 8
 
@@ -83,6 +85,11 @@ def main():
     cipher = CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA
     affinity = None
     ciphertext_len = 512
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Lucky 13 attack check for {0} {1}".format(group_name, CipherSuite.ietfNames[cipher]))
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:x:X:n:l:o:i:C:", ["help",
@@ -428,7 +435,8 @@ def main():
         print("Running tests for {0}".format(CipherSuite.ietfNames[cipher]))
 
         for c_name, c_test in ordered_tests:
-            print("{0} ...".format(c_name))
+            print("{} -->\n".format(c_name).upper())
+            time.sleep(1)
 
             runner = Runner(c_test)
 
@@ -465,11 +473,7 @@ def main():
                     bad += 1
                     failed.append(c_name)
 
-        print("Lucky 13 attack check for {0} {1}".format(group_name, CipherSuite.ietfNames[cipher]))
-        print("WARNING: this test doesn't use a side-channel free test harness")
-        print("as such, it's very likely to cause false positives when measuring")
-        print("small side-channels, on the order of few microseconds.")
-        print("See https://people.redhat.com/~hkario/marvin/ for more details")
+            print("=" * CHARACTERS_LENGTH, "\n")
 
         print("Test end")
         print(20 * '=')
@@ -479,7 +483,7 @@ def main():
         print("XFAIL: {0}".format(xfail))
         print("FAIL: {0}".format(bad))
         print("XPASS: {0}".format(xpass))
-        print(20 * '=')
+        print(20 * '=', '\n')
         sort = sorted(xpassed, key=natural_sort_keys)
         if len(sort):
             print("XPASSED:\n\t{0}".format('\n\t'.join(repr(i) for i in sort)))

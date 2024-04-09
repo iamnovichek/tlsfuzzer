@@ -25,6 +25,8 @@ from tlslite.extensions import SupportedGroupsExtension, \
 from tlsfuzzer.utils.lists import natural_sort_keys
 from tlsfuzzer.helpers import sig_algs_to_ids, RSA_SIG_ALL, AutoEmptyExtension
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 4
 
@@ -70,6 +72,11 @@ def main():
     sig_algs = None  # `sigalgs` w/o underscore is used for client certificates
     timeout = 5.0
     ems = False
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Test if server supports the RFC 7919 key exchange".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:S:e:x:X:t:n:M", ["help", "alert=",
@@ -474,7 +481,8 @@ def main():
     for c_name, c_test in ordered_tests:
         if run_only and c_name not in run_only or c_name in run_exclude:
             continue
-        print("{0} ...".format(c_name))
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(c_test)
 
@@ -511,10 +519,12 @@ def main():
                 bad += 1
                 failed.append(c_name)
 
+        print("=" * CHARACTERS_LENGTH, "\n")
+
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests) + 2*len(sanity_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))
