@@ -7,6 +7,7 @@ import traceback
 import sys
 import getopt
 import re
+import time
 from random import sample
 from itertools import chain
 
@@ -32,6 +33,7 @@ from tlslite.utils.keyfactory import parsePEMKey
 from tlslite.x509 import X509
 from tlslite.x509certchain import X509CertChain
 
+from constants import CHARACTERS_LENGTH
 
 version = 11
 
@@ -98,6 +100,13 @@ def main():
                (HashAlgorithm.sha1, SignatureAlgorithm.rsa)]
     cert_types = [ClientCertificateType.rsa_sign,
                   ClientCertificateType.ecdsa_sign]
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Test to verify if server accepts empty certificate messages and".upper())
+    print("advertises only expected signature algotithms in Certificate".upper())
+    print("Request message".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:x:X:s:k:c:T:dM", ["help", "ems"])
@@ -398,7 +407,8 @@ def main():
     for c_name, c_test in ordered_tests:
         if run_only and c_name not in run_only or c_name in run_exclude:
             continue
-        print("{0} ...".format(c_name))
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(c_test)
 
@@ -434,15 +444,13 @@ def main():
             else:
                 bad += 1
                 failed.append(c_name)
-
-    print("Test to verify if server accepts empty certificate messages and")
-    print("advertises only expected signature algotithms in Certificate")
-    print("Request message\n")
+        
+        print("=" * CHARACTERS_LENGTH, "\n")
 
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests) + 2*len(sanity_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))
