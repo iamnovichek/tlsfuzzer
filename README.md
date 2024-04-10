@@ -65,6 +65,15 @@ git clone https://github.com/tlsfuzzer/tlsfuzzer.git
 
 ## Usage
 
+# Run all tests automatically 
+
+```
+cd tlsfuzzer
+python3 main.py
+```
+
+# Or run all tests manually
+
 After all dependencies are installed, make sure:
 
  * you're in the directory of the project (after git clone just `cd tlsfuzzer`)
