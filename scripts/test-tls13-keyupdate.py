@@ -31,6 +31,8 @@ from tlslite.extensions import KeyShareEntry, ClientKeyShareExtension, \
         SignatureAlgorithmsExtension, SignatureAlgorithmsCertExtension
 from tlsfuzzer.helpers import key_share_gen, RSA_SIG_ALL, key_share_ext_gen
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 5
 
@@ -66,6 +68,13 @@ def main():
     expected_failures = {}
     last_exp_tmp = None
     coalescing = False
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Test with KeyUpdate msg with different msg_type or fragmented msg.".upper())
+    print("Verify that server will correctly handle updating the keys".upper())
+    print("or refuse the connection with relevant Alert msg.".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:x:X:n:", ["help", "coalescing"])
@@ -747,7 +756,8 @@ def main():
     ordered_tests = chain(sanity_tests, sampled_tests, sanity_tests)
 
     for c_name, c_test in ordered_tests:
-        print("{0} ...".format(c_name))
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(c_test)
 
@@ -783,15 +793,13 @@ def main():
             else:
                 bad += 1
                 failed.append(c_name)
-
-    print("Test with KeyUpdate msg with different msg_type or fragmented msg.")
-    print("Verify that server will correctly handle updating the keys")
-    print("or refuse the connection with relevant Alert msg.")
+        
+        print("=" * CHARACTERS_LENGTH, "\n")
 
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))

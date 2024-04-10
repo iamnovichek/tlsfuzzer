@@ -30,6 +30,8 @@ from tlslite.extensions import KeyShareEntry, ClientKeyShareExtension, \
 from tlsfuzzer.helpers import key_share_gen, RSA_SIG_ALL, AutoEmptyExtension
 from tlsfuzzer.fuzzers import structured_random_iter
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 5
 
@@ -71,6 +73,13 @@ def main():
     ext_exclude = set()
     exp_sup_groups = False
     individual_ext = []
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Test with large number of unassigned extensions in TLS 1.3".upper())
+    print("Verify that server does not reply to any of these extensions".upper())
+    print("and establish regular session.".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:x:X:n:",
@@ -413,7 +422,8 @@ def main():
     ordered_tests = chain(sanity_tests, sampled_tests, sanity_tests)
 
     for c_name, c_test in ordered_tests:
-        print("{0} ...".format(c_name))
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(c_test)
 
@@ -449,15 +459,13 @@ def main():
             else:
                 bad += 1
                 failed.append(c_name)
-
-    print("Test with large number of unassigned extensions in TLS 1.3")
-    print("Verify that server does not reply to any of these extensions")
-    print("and establish regular session.\n")
+        
+        print("=" * CHARACTERS_LENGTH, "\n")
 
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests) + 2*len(sanity_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))

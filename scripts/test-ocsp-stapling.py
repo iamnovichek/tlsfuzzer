@@ -27,6 +27,8 @@ from tlslite.extensions import StatusRequestExtension, \
 from tlsfuzzer.utils.lists import natural_sort_keys
 from tlsfuzzer.helpers import RSA_SIG_ALL, AutoEmptyExtension
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 6
 
@@ -68,6 +70,11 @@ def main():
     renego = 1
     status = True
     ems = False
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Script to verify that OCSP stapling support is implemented in server".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:n:e:x:X:r:dM", ["help", "no-status",
@@ -352,7 +359,8 @@ def main():
     for c_name, c_test in ordered_tests:
         if run_only and c_name not in run_only or c_name in run_exclude:
             continue
-        print("{0} ...".format(c_name))
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(c_test)
 
@@ -388,13 +396,11 @@ def main():
             else:
                 bad += 1
                 failed.append(c_name)
+        
+        print("=" * CHARACTERS_LENGTH, "\n")
 
-    print("Script to verify that OCSP stapling support is implemented in "
-          "server")
-    print("Also can be used to reproduce CVE-2016-6304 with the use of -r "
-          "option\n")
     print("Test end")
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("version: {0}".format(version))
     print("successful: {0}".format(good))
     print("failed: {0}".format(bad))

@@ -26,6 +26,8 @@ from tlslite.extensions import \
         SupportedVersionsExtension, SupportedGroupsExtension, \
         SignatureAlgorithmsExtension, SignatureAlgorithmsCertExtension
 
+import time
+from constants import CHARACTERS_LENGTH
 
 """Script to verify that the DH keys are computed correctly."""
 
@@ -64,6 +66,13 @@ def main():
     expected_failures = {}
     last_exp_tmp = None
     min_zeros = 1
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Check if the connections work when the calculated DH shared secret".upper())
+    print("must be padded on the left with zeros or when the server needs".upper())
+    print("to pad its key share".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:x:X:n:", ["help", "min-zeros="])
@@ -228,7 +237,8 @@ def main():
         while True:
             # don't hog the memory unnecessairly
             collected_shared_secrets[:] = []
-            print("\"{1}\" repeat {0}...".format(i, c_name))
+            print("{} -->\n".format(c_name).upper())
+            time.sleep(1)
             i += 1
             if c_name == 'sanity':
                 break_shared = True
@@ -251,6 +261,7 @@ def main():
                     xpass += 1
                     xpassed.append(c_name)
                     print("XPASS-expected failure but test passed\n")
+                    print("=" * CHARACTERS_LENGTH, "\n")
                 else:
                     if expected_failures[c_name] is not None and  \
                         expected_failures[c_name] not in str(exception):
@@ -258,9 +269,11 @@ def main():
                             failed.append(c_name)
                             print("Expected error message: {0}\n"
                                 .format(expected_failures[c_name]))
+                            print("=" * CHARACTERS_LENGTH, "\n")
                     else:
                         xfail += 1
                         print("OK-expected failure\n")
+                        print("=" * CHARACTERS_LENGTH, "\n")
                     break
             else:
                 if res:
@@ -286,24 +299,20 @@ def main():
                                   " to zero.".format(min_zeros))
                             break_key_share = True
                     print("OK\n")
+                    print("=" * CHARACTERS_LENGTH, "\n")
                 else:
                     bad += 1
                     failed.append(c_name)
+                    print("=" * CHARACTERS_LENGTH, "\n")
                     break
 
                 if break_shared and break_key_share:
                     break
 
-    print('')
-
-    print("Check if the connections work when the calculated DH shared secret")
-    print("must be padded on the left with zeros or when the server needs")
-    print("to pad its key share")
-
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests) + 2*len(sanity_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))

@@ -25,6 +25,8 @@ from tlslite.constants import CipherSuite, AlertLevel, AlertDescription, \
 from tlsfuzzer.utils.lists import natural_sort_keys
 from tlsfuzzer.helpers import uniqueness_check
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 5
 
@@ -62,6 +64,12 @@ def main():
     last_exp_tmp = None
     repeats = 32
     record_split = True
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Check if the server provided random values are unique".upper())
+    print("Checks random and session_id from Server Hello".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:x:X:n:z", ["help", "repeat="])
@@ -200,7 +208,8 @@ def main():
         if run_only and c_name not in run_only or c_name in run_exclude:
             continue
         for i in range(repeats):
-            print("\"{1}\" repeat {0}...".format(i, c_name))
+            print("{} -->\n".format(c_name).upper())
+            time.sleep(1)
 
             runner = Runner(c_test)
 
@@ -236,22 +245,23 @@ def main():
                     else:
                         bad += 1
                         failed.append(c_name)
+            
+            print("=" * CHARACTERS_LENGTH, "\n")
 
     failed_tests = uniqueness_check(variables_check, good + bad)
+    print("results:\n".upper())
     if failed_tests:
         print("\n".join(failed_tests))
     else:
         print("\n".join("{0} values: OK".format(i) for i in variables_check))
 
-    print('')
-
-    print("Check if the server provided random values are unique")
-    print("Checks random and session_id from Server Hello")
+    print("=" * CHARACTERS_LENGTH, "\n")
+    time.sleep(1)
 
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests) + 2*len(sanity_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))

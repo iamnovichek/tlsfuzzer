@@ -29,6 +29,8 @@ from tlslite.extensions import KeyShareEntry, ClientKeyShareExtension, \
         SignatureAlgorithmsExtension, SignatureAlgorithmsCertExtension
 from tlsfuzzer.helpers import key_share_gen, RSA_SIG_ALL
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 4
 
@@ -63,6 +65,11 @@ def main():
     expected_failures = {}
     last_exp_tmp = None
     cookie = False
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Check handling need for HelloRetryRequest".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:x:X:n:", ["help", "cookie"])
@@ -235,7 +242,8 @@ def main():
     for c_name, c_test in ordered_tests:
         if run_only and c_name not in run_only or c_name in run_exclude:
             continue
-        print("{0} ...".format(c_name))
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(c_test)
 
@@ -271,16 +279,13 @@ def main():
             else:
                 bad += 1
                 failed.append(c_name)
-
-    print("Check handling need for HelloRetryRequest")
-    print("Verify that server does send HRR message when necessary, check")
-    print("if the CCS (for middlebox compatibility) is sent at expected")
-    print("time. Also allows checking if cookie extension is used.\n")
+        
+        print("=" * CHARACTERS_LENGTH, "\n")
 
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests) + 2*len(sanity_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))

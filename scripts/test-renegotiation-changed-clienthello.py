@@ -30,6 +30,8 @@ from tlsfuzzer.utils.ordered_dict import OrderedDict
 from tlsfuzzer.helpers import SIG_ALL, psk_ext_gen, AutoEmptyExtension, \
         key_share_ext_gen, psk_session_ext_gen, psk_ext_updater
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 3
 
@@ -90,6 +92,12 @@ def main():
     dhe = False
     ocsp = False
     ems = False
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Test how server behaves when the renegotiation Client Hello is".upper())
+    print("changed compared to the initial ClientHello.".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:x:X:n:dM",
@@ -412,7 +420,8 @@ def main():
     ordered_tests = chain(sanity_tests, sampled_tests, sanity_tests)
 
     for c_name, c_test in ordered_tests:
-        print("{0} ...".format(c_name))
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(c_test)
 
@@ -448,18 +457,13 @@ def main():
             else:
                 bad += 1
                 failed.append(c_name)
-
-    print("Test how server behaves when the renegotiation Client Hello is")
-    print("changed compared to the initial ClientHello.\n")
-    print("If the renegotiation is supposed to be disabled use the")
-    print("test-renegotiation-disabled.py or")
-    print("test-renegotiation-disabled-client-cert.py scripts to verify")
-    print("that.\n")
+        
+        print("=" * CHARACTERS_LENGTH, "\n")
 
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests) + 2*len(sanity_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))

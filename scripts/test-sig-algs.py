@@ -28,6 +28,8 @@ from tlsfuzzer.helpers import RSA_SIG_ALL, AutoEmptyExtension
 from tlsfuzzer.utils.ordered_dict import OrderedDict
 from tlsfuzzer.utils.lists import natural_sort_keys
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 8
 
@@ -61,6 +63,13 @@ def main():
     expected_failures = {}
     last_exp_tmp = None
     ems = False
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Check if server correctly selects signature algorithm for SKE".upper())
+    print("Test to verify that Server Key Exchange is signed with safe".upper())
+    print("and correct algorithms.".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:n:x:X:M", ["help", "ems"])
@@ -528,7 +537,8 @@ def main():
     ordered_tests = chain(sanity_tests, sampled_tests, sanity_tests)
 
     for c_name, c_test in ordered_tests:
-        print("{0} ...".format(c_name))
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(c_test)
 
@@ -564,21 +574,14 @@ def main():
             else:
                 bad += 1
                 failed.append(c_name)
+        
+        print("=" * CHARACTERS_LENGTH, "\n")
 
     print("Test end\n")
 
-    print("Check if server correctly selects signature algorithm for SKE\n")
-    print("Test to verify that Server Key Exchange is signed with safe")
-    print("and correct algorithms.\n")
-    print("Note that test expects server with support for both rsa_pss_rsae_*")
-    print("and rsa_pss_pss_* signatures, in other words, one with both")
-    print("rsaEncryption key in one certificate and rsasse-pss in second")
-    print("certificate. If there's only one certificate installed in server,")
-    print("some of the tests that advertise just one algorithm may need to be")
-    print("configured as expected failures.")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests) + 2 * len(sanity_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))

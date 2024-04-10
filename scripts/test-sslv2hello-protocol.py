@@ -24,6 +24,8 @@ from tlslite.extensions import SupportedGroupsExtension, \
 from tlsfuzzer.utils.lists import natural_sort_keys
 from tlsfuzzer.helpers import RSA_SIG_ALL, AutoEmptyExtension
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 8
 
@@ -68,6 +70,12 @@ def main():
     dhe = False
     no_ssl2 = False
     ems = False
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Test if the server supports SSLv2-style Client Hello messages for".upper())
+    print("negotiating TLS connections".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:x:X:n:dM", ["help", "no-ssl2",
@@ -351,7 +359,8 @@ def main():
     for c_name, c_test in ordered_tests:
         if run_only and c_name not in run_only or c_name in run_exclude:
             continue
-        print("{0} ...".format(c_name))
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(c_test)
 
@@ -387,18 +396,13 @@ def main():
             else:
                 bad += 1
                 failed.append(c_name)
+        
+        print("=" * CHARACTERS_LENGTH, "\n")
 
-    print("Basic test for SSLv2 Hello protocol for TLS 1.0 to TLS 1.2 "
-          "negotiation")
-    print("Checks if the server can negotiate TLS when client initiated the")
-    print("connection using a SSLv2 compatible ClientHello but included TLS")
-    print("compatible ciphersuites")
-    print("Alternatively, verifies that SSLv2 records are rejected when run")
-    print("with --no-ssl2 option\n")
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests) + 2*len(sanity_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))

@@ -21,6 +21,8 @@ from tlslite.constants import CipherSuite, AlertLevel, \
         ExtensionType
 from tlsfuzzer.utils.lists import natural_sort_keys
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 3
 
@@ -51,6 +53,12 @@ def main():
     run_exclude = set()
     expected_failures = {}
     last_exp_tmp = None
+
+    print("=" * CHARACTERS_LENGTH)
+    print("verifies that an implementation implements and".upper())
+    print("will negotiate SSLv2 protocol.".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
 
@@ -123,7 +131,8 @@ def main():
     for c_name, conversation in shuffled_tests:
         if c_name in run_exclude:
             continue
-        print("{0} ...".format(c_name))
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(conversation)
 
@@ -160,20 +169,12 @@ def main():
             else:
                 xfail+=1
 
-    print("Note: This test verifies that an implementation implements and")
-    print("      will negotiate SSLv2 protocol. This is a BAD configuration.")
-    print("      SSLv2 was officially deprecated (MUST NOT use) in 2011, see")
-    print("      RFC 6176.")
-    print("      It is left here only to verify that the tlslite-ng")
-    print("      implementation is correct, so tests for disablement of SSLv2")
-    print("      are sane.")
-    print("      For same reason, if any of the connections succeeds, the exit")
-    print("      code from this script will be 1 (i.e. 'failure')")
-    print("")
+        print("=" * CHARACTERS_LENGTH, "\n")
+
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(shuffled_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))

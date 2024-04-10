@@ -25,6 +25,8 @@ from tlsfuzzer.helpers import flexible_getattr
 from tlsfuzzer.utils.lists import natural_sort_keys
 from tlsfuzzer.helpers import RSA_SIG_ALL, AutoEmptyExtension
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 7
 
@@ -70,6 +72,12 @@ def main():
     alert_description = None
     dhe = False
     ems = False
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Checks if the server will accept arbitrary number of warning level".upper())
+    print("alerts (specified with the -n option)".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:x:X:n:dM",
@@ -214,7 +222,8 @@ def main():
             continue
         if c_name in run_exclude:
             continue
-        print("{0} ...".format(c_name))
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(conversation)
 
@@ -250,15 +259,13 @@ def main():
             else:
                 bad += 1
                 failed.append(c_name)
-
-    print("Test for the OpenSSL Death Alert (CVE-2016-8610) vulnerability")
-    print("Checks if the server will accept arbitrary number of warning level")
-    print("alerts (specified with the -n option)")
+        
+        print("=" * CHARACTERS_LENGTH, "\n")
 
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))

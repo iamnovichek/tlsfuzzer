@@ -32,6 +32,9 @@ from tlslite.extensions import ClientKeyShareExtension, \
         SignatureAlgorithmsExtension, SignatureAlgorithmsCertExtension
 from tlsfuzzer.helpers import key_share_gen, SIG_ALL
 
+import time
+from constants import CHARACTERS_LENGTH
+
 version = 7
 
 
@@ -92,6 +95,11 @@ def main():
     data_file = "data.bin"
     sigs_file = "sigs.bin"
     priv_key_file = None
+
+    print("=" * CHARACTERS_LENGTH)
+    print("checks if a server is vulnerable to Minerva attack".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:o:i:e:x:X:n:C:", ["help", "curve=",
@@ -279,7 +287,8 @@ def main():
     ordered_tests = chain(sanity_tests, sampled_tests, sanity_tests)
 
     for c_name, c_test in ordered_tests:
-        print("{0}... ".format(c_name), end="")
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(c_test)
 
@@ -315,22 +324,13 @@ def main():
             else:
                 bad += 1
                 failed.append(c_name)
-
-    print("""Test script to check is a server is vulnerable to Minerva attack
-
-This script takes as argument a server, a curve and gathers signatures created
-by the server during the TLS handshake and the amount of time the server took
-to sign the data. These signatures then are gathered and (if the servers
-private key is provided) it extracts from then the nonce (K value) from each
-signature. Then the nonces are grouped (one of max nonce bit size with one or
-more of less nonce bit size). Finally the groups are analyzed with several
-statical tests to figure out if there is a correlation between the nonce bit
-size and the timing that was needed to sign the data.""")
+        
+        print("=" * CHARACTERS_LENGTH, "\n")
 
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests) + 2*len(sanity_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))

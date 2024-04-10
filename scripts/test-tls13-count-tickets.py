@@ -27,6 +27,8 @@ from tlslite.extensions import KeyShareEntry, ClientKeyShareExtension, \
         SignatureAlgorithmsExtension, SignatureAlgorithmsCertExtension
 from tlsfuzzer.helpers import key_share_gen, RSA_SIG_ALL
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 4
 
@@ -60,6 +62,11 @@ def main():
     expected_failures = {}
     last_exp_tmp = None
     num_tickets = 0
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Check that client expect specific number of NTS messages.".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:x:X:n:t:", ["help"])
@@ -209,7 +216,8 @@ def main():
     for c_name, c_test in ordered_tests:
         if run_only and c_name not in run_only or c_name in run_exclude:
             continue
-        print("{0} ...".format(c_name))
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(c_test)
 
@@ -245,16 +253,13 @@ def main():
             else:
                 bad += 1
                 failed.append(c_name)
-
-    print("Basic communication test with TLS 1.3 server.")
-    print("Check that client expect specific number of NTS messages.")
-    print("Communication with typical group and cipher with")
-    print("the TLS 1.3 server.\n")
+        
+        print("=" * CHARACTERS_LENGTH, "\n")
 
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests) + 2*len(sanity_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))

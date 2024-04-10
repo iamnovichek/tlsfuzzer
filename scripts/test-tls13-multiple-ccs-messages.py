@@ -28,6 +28,8 @@ from tlslite.extensions import KeyShareEntry, ClientKeyShareExtension, \
         SignatureAlgorithmsExtension, SignatureAlgorithmsCertExtension
 from tlsfuzzer.helpers import key_share_gen, SIG_ALL
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 2
 
@@ -61,6 +63,12 @@ def main():
     expected_failures = {}
     last_exp_tmp = None
     ccs_num = 2
+
+    print("=" * CHARACTERS_LENGTH)
+    print("The tests sends multiple CCS messages during the handshake".upper())
+    print("and checks if the server aborts the connection.".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:x:X:n:", ["help", "ccs="])
@@ -356,7 +364,8 @@ def main():
     ordered_tests = chain(sanity_tests, sampled_tests, sanity_tests)
 
     for c_name, c_test in ordered_tests:
-        print("{0} ...".format(c_name))
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(c_test)
 
@@ -392,16 +401,13 @@ def main():
             else:
                 bad += 1
                 failed.append(c_name)
-
-    print("The tests sends multiple CCS messages during the handshake")
-    print("and checks if the server aborts the connection.")
-    print("We can also use this script to test if the server is vulnerable to")
-    print("CVE-2020-25648.\n")
+        
+        print("=" * CHARACTERS_LENGTH, "\n")
 
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests) + 2*len(sanity_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))

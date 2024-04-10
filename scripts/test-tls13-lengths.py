@@ -28,6 +28,8 @@ from tlslite.extensions import KeyShareEntry, ClientKeyShareExtension, \
         SignatureAlgorithmsExtension, SignatureAlgorithmsCertExtension
 from tlsfuzzer.helpers import key_share_gen, SIG_ALL, key_share_ext_gen
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 7
 
@@ -65,6 +67,11 @@ def main():
     last_exp_tmp = None
     cipher = CipherSuite.TLS_AES_128_GCM_SHA256
     timeout = 5.0
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Check if different lengths of plaintext are handled correctly.".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:x:X:n:C:t:", ["help"])
@@ -220,7 +227,8 @@ def main():
     ordered_tests = chain(sanity_tests, sampled_tests, sanity_tests)
 
     for c_name, c_test in ordered_tests:
-        print("{0} ...".format(c_name))
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(c_test)
 
@@ -256,20 +264,14 @@ def main():
             else:
                 bad += 1
                 failed.append(c_name)
-
-    print("Check if different lengths of plaintext are handled correctly.")
-    print("Test expects the server to reply with plaintext of the same length")
-    print("it sent, that's usually called an 'echo' mode in test servers.")
-    print("For full test coverage you should execute it with all valid")
-    print("combinations of cipher (AES-128, AES-256, Chacha20, etc.), all valid")
-    print("cipher modes (GCM, CCM, etc.), etc.")
-    print()
+        
+        print("=" * CHARACTERS_LENGTH, "\n")
 
     print("Test end")
     print("Cipher used: {0}".format(CipherSuite.ietfNames[cipher]))
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests) + 2*len(sanity_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))

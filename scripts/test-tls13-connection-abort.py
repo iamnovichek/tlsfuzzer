@@ -27,6 +27,8 @@ from tlslite.extensions import KeyShareEntry, ClientKeyShareExtension, \
         SignatureAlgorithmsExtension, SignatureAlgorithmsCertExtension
 from tlsfuzzer.helpers import key_share_gen, SIG_ALL
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 1
 
@@ -66,6 +68,12 @@ def main():
     ciphers = None
     repeat = 10
     timeout = 5
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Check if server behaves correctly when client aborts connection".upper())
+    print("Intended to test memory leaks in servers".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:x:X:n:C:t:", ["help", "repeat="])
@@ -383,7 +391,8 @@ def main():
         ordered_tests = chain(sanity_tests, sampled_tests, sanity_tests)
 
         for c_name, c_test in ordered_tests:
-            print("\"{0}\" repeat {1}...".format(c_name, i))
+            print("{} -->\n".format(c_name).upper())
+            time.sleep(1)
 
             runner = Runner(c_test)
 
@@ -420,13 +429,12 @@ def main():
                     bad += 1
                     failed.append(c_name)
 
-    print("Check if server behaves correctly when client aborts connection")
-    print("Intended to test memory leaks in servers\n")
+            print("=" * CHARACTERS_LENGTH, "\n")
 
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(
         repeat * (len(sampled_tests) + 2*len(sanity_tests))))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))

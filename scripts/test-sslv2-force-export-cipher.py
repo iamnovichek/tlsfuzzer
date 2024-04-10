@@ -22,6 +22,8 @@ from tlslite.constants import CipherSuite, AlertLevel, \
         ExtensionType, SSL2ErrorDescription
 from tlsfuzzer.utils.lists import natural_sort_keys
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 3
 
@@ -52,6 +54,11 @@ def main():
     run_exclude = set()
     expected_failures = {}
     last_exp_tmp = None
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Test if the server supports export grade SSLv2 ciphers".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
 
@@ -144,7 +151,8 @@ def main():
     for c_name, conversation in sampled_tests:
         if c_name in run_exclude:
             continue
-        print("{0} ...".format(c_name))
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(conversation)
 
@@ -180,24 +188,13 @@ def main():
                 print("OK\n")
             else:
                 bad+=1
+        
+        print("=" * CHARACTERS_LENGTH, "\n")
     
-    print("Note: SSLv2 was officially deprecated (MUST NOT use) in 2011, see")
-    print("      RFC 6176.")
-    print("      If one or more of the tests fails because of error in form of")
-    print("")
-    print("      Unexpected message from peer: Handshake()")
-    print("")
-    print("      With any number inside parethensis, and the server is")
-    print("      configured to not support SSLv2, it means it most")
-    print("      likely is vulnerable to CVE-2015-3197 and CVE-2016-0800.")
-    print("      In case it's a RC4 or 3DES cipher, you may verify that it")
-    print("      really supports it using:")
-    print("      test-sslv2-connection.py")
-    print("")
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))
