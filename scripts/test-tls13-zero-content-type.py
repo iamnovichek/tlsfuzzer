@@ -30,6 +30,8 @@ from tlslite.extensions import KeyShareEntry, ClientKeyShareExtension, \
         SignatureAlgorithmsExtension, SignatureAlgorithmsCertExtension
 from tlsfuzzer.helpers import key_share_gen, SIG_ALL
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 2
 
@@ -61,6 +63,12 @@ def main():
     run_exclude = set()
     expected_failures = {}
     last_exp_tmp = None
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Check if handling of records with an internal content type of zero is ".upper())
+    print("correct.".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:x:X:n:", ["help"])
@@ -417,7 +425,8 @@ def main():
     for c_name, c_test in ordered_tests:
         if run_only and c_name not in run_only or c_name in run_exclude:
             continue
-        print("{0} ...".format(c_name))
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(c_test)
 
@@ -453,15 +462,13 @@ def main():
             else:
                 bad += 1
                 failed.append(c_name)
-
-    print("TLS 1.3 zero-value content type")
-    print("Check if handling of records with an internal content type of zero is ")
-    print("correct.\n")
+        
+        print("=" * CHARACTERS_LENGTH, "\n")
 
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests) + 2*len(sanity_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))

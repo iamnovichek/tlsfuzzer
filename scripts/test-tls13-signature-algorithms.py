@@ -30,6 +30,8 @@ from tlslite.extensions import SignatureAlgorithmsExtension, \
         SupportedGroupsExtension, TLSExtension, \
         SignatureAlgorithmsCertExtension
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 5
 
@@ -64,6 +66,12 @@ def main():
     run_exclude = set()
     expected_failures = {}
     last_exp_tmp = None
+
+    print("=" * CHARACTERS_LENGTH)
+    print("Check if valid signature algorithm extensions are accepted and".upper())
+    print("invalid properly rejected by the TLS 1.3 server.".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, args = getopt.getopt(argv, "h:p:e:x:X:n:", ["help", "alert="])
@@ -713,7 +721,8 @@ def main():
     ordered_tests = chain(sanity_tests, sampled_tests, sanity_tests)
 
     for c_name, c_test in ordered_tests:
-        print("{0} ...".format(c_name))
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(c_test)
 
@@ -749,17 +758,13 @@ def main():
             else:
                 bad += 1
                 failed.append(c_name)
-
-    print("Signature Algorithms in TLS 1.3")
-    print("Check if valid signature algorithm extensions are accepted and")
-    print("invalid properly rejected by the TLS 1.3 server.\n")
-    print("Server must be configured to support only rsa_pss_rsae_sha512")
-    print("signature algorithm.")
+        
+        print("=" * CHARACTERS_LENGTH, "\n")
 
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests) + 2*len(sanity_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))

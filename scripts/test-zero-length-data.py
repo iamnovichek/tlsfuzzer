@@ -21,6 +21,8 @@ from tlsfuzzer.expect import ExpectServerHello, ExpectCertificate, \
 from tlslite.constants import CipherSuite, AlertLevel, AlertDescription
 from tlsfuzzer.utils.lists import natural_sort_keys
 
+import time
+from constants import CHARACTERS_LENGTH
 
 version = 3
 
@@ -52,6 +54,11 @@ def main():
     run_exclude = set()
     expected_failures = {}
     last_exp_tmp = None
+
+    print("=" * CHARACTERS_LENGTH)
+    print("check if app data records with zero payload are accepted by server".upper())
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     argv = sys.argv[1:]
     opts, argv = getopt.getopt(argv, "h:p:e:n:x:X:", ["help"])
@@ -123,7 +130,8 @@ def main():
         if c_name in run_exclude:
             continue
 
-        print("{0} ...".format(c_name))
+        print("{} -->\n".format(c_name).upper())
+        time.sleep(1)
 
         runner = Runner(conversation)
 
@@ -162,11 +170,13 @@ def main():
                 print("OK")
             else:
                 bad+=1
+        
+        print("=" * CHARACTERS_LENGTH, "\n")
 
     print("Test end")
     print(20 * '=')
     print("version: {0}".format(version))
-    print(20 * '=')
+    print(20 * '=', '\n')
     print("TOTAL: {0}".format(len(sampled_tests)))
     print("SKIP: {0}".format(len(run_exclude.intersection(conversations.keys()))))
     print("PASS: {0}".format(good))
