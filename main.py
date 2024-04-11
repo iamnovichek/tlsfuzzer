@@ -18,6 +18,7 @@ def get_test_name(file_name):
 
 def run_tests(tests_list, website_name):
     for test in tests_list:
+        logger.info("\nTests: " + str(tests_list.index(test) + 1) + "/" + str(len(tests_list)) + "\n")
         text = "\n" + ("-" * 50) + "\n" + " TESTING " + get_test_name(test) + "\n" + ("-" * 50)
         logger.info(text)
 
@@ -32,4 +33,9 @@ if __name__ == "__main__":
     website_name = input("Enter your website domain name: \n")
 
     run_tests(tests, website_name)
+
+    logger.info("\n\n")
+    logger.info("============================================================")
+    logger.info("======================== DONE !!! ==========================")
+    logger.info("============================================================")
 
