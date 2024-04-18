@@ -9,6 +9,7 @@ import re
 import time
 from itertools import chain
 from random import sample
+from pprint import pprint
 
 from tlsfuzzer.runner import Runner
 from tlsfuzzer.messages import Connect, ClientHelloGenerator, \
@@ -189,6 +190,12 @@ def main():
                    CipherSuite.TLS_RSA_WITH_AES_128_CCM_8,
                    CipherSuite.TLS_RSA_WITH_AES_256_CCM_8,
                    CipherSuite.TLS_EMPTY_RENEGOTIATION_INFO_SCSV]
+
+    print("=" * CHARACTERS_LENGTH)
+    print("ciphers will be used".upper())
+    pprint(ciphers)
+    print("=" * CHARACTERS_LENGTH)
+    time.sleep(3)
 
     conversation = Connect(host, port)
     node = conversation
@@ -616,11 +623,13 @@ def main():
     print("XPASS: {0}".format(xpass))
     print(20 * '=')
     sort = sorted(xpassed ,key=natural_sort_keys)
+    print("=" * CHARACTERS_LENGTH, "\n")
     if len(sort):
         print("XPASSED:\n\t{0}".format('\n\t'.join(repr(i) for i in sort)))
     sort = sorted(failed, key=natural_sort_keys)
     if len(sort):
-        print("FAILED:\n\t{0}".format('\n\t'.join(repr(i) for i in sort)))
+        print("The server doesn't accept ciphers below:".upper())
+        print("Ciphers -->\n\t{0}".format('\n\t'.join(repr(i) for i in sort)))
 
     if bad or xpass:
         sys.exit(1)
